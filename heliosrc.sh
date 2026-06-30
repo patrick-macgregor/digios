@@ -1,5 +1,6 @@
+#! /usr/bin/env bash
 # heliosrc
-# this script for establishing bash enviroment 
+# this script for establishing bash enviroment
 # user should source this script at .bashrc
 # if multiple digios copies exist, source heliosrc.sh at ~/ to change the HELIOSSYS
 
@@ -7,19 +8,19 @@
 set_GitPS1()
 {
     function git_branch {
-	ref=$(git symbolic-ref HEAD 2> /dev/null) || return;
-	echo "("${ref#refs/heads/}")";
+    ref=$(git symbolic-ref HEAD 2> /dev/null) || return;
+    echo "("${ref#refs/heads/}")";
     }
-    
+
     function git_since_last_commit {
-	now=`date +%s`;
-	last_commit=$(git log --pretty=format:%at -1 2> /dev/null) || return;
-	seconds_since_last_commit=$((now-last_commit));
-	minutes_since_last_commit=$((seconds_since_last_commit/60));
-	hours_since_last_commit=$((minutes_since_last_commit/60));
-	minutes_since_last_commit=$((minutes_since_last_commit%60));
-	
-	echo "${hours_since_last_commit}h${minutes_since_last_commit}m";
+    now=`date +%s`;
+    last_commit=$(git log --pretty=format:%at -1 2> /dev/null) || return;
+    seconds_since_last_commit=$((now-last_commit));
+    minutes_since_last_commit=$((seconds_since_last_commit/60));
+    hours_since_last_commit=$((minutes_since_last_commit/60));
+    minutes_since_last_commit=$((minutes_since_last_commit%60));
+
+    echo "${hours_since_last_commit}h${minutes_since_last_commit}m";
     }
 
     #========== PS1 is variable of appearance of the prompt
@@ -48,20 +49,20 @@ unset HELIOSDAQ
 unset HELIOSANA
 
 unset HELIOSSYS
-SOURCE=${BASH_ARGV[0]}
+SOURCE="${0}"
 PCName=$(uname -n)
-if [ $(uname -n) == "digios1" ]; then
+if [[ $(uname -n) == "digios1" ]]; then
   HELIOSSYS=~/digios
 else
-  if [ $(pwd) == $HOME ]; then 
+  if [[ $(pwd) == $HOME ]]; then
     HELIOSSYS=$(dirname ${SOURCE})
-    
+
     if [[ ${HELIOSSYS} == *"$HOME"* ]]; then
       dummpy=0
     else
       HELIOSSYS=${HOME}/$HELIOSSYS
     fi
-    
+
   else
     HELIOSSYS=$(pwd)
   fi
@@ -125,19 +126,19 @@ function ListHeliosFunctions {
 
 function ShowRunSize {
     if [ $# -ne 1 ]; then
-	echo 'Please set run number '
+    echo 'Please set run number '
        return 0
     fi
     source ${HELIOSSYS}/expName.sh
     RUN=$1
     if [ ${RUN} = "latest" ]; then
-	RUN=${LastRunNum}
+    RUN=${LastRunNum}
     fi
     runLen=${#RUN}
     if [ ${runLen} -eq 1 ]; then
-	RUN="00"${RUN}
+    RUN="00"${RUN}
     elif [ ${runLen} -eq 2 ]; then
-	RUN="0"${RUN}
+    RUN="0"${RUN}
     fi
     du -hsc ${HELIOSSYS}/analysis/data/${expName}_run_$RUN*
 }
@@ -186,7 +187,7 @@ function DeleteSlackBotMsg {
     fi
 
     CHANNEL=$1
-    
+
     slack-cleaner --token ${SLACKTOKEN} --message --bot --rate 1 --channel $CHANNEL
 
     read -p "Are you want to delete them all? [y/n] " isDelete
@@ -198,11 +199,11 @@ function DeleteSlackBotMsg {
 }
 
 function DeleteSlackBotFile {
-    
+
     slack-cleaner --token ${SLACKTOKEN} --file --rate 3 --user grafana_alert_bot
-    
+
     read -p "Are you want to delete them all? [y/n] " isDelete
-    
+
     if [ $isDelete = "y" ]; then
         slack-cleaner --token ${SLACKTOKEN} --file --rate 3 --user grafana_alert_bot --perform
     fi
@@ -210,5 +211,5 @@ function DeleteSlackBotFile {
 }
 
 
-unset -f setGitPS1
-unset -f setHistCtrl
+unset -f set_GitPS1
+unset -f set_HistCtrl
