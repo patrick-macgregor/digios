@@ -1,8 +1,18 @@
 CC=g++
 CFLAG= -std=c++17 -O2 -pthread  -lgsl -lgslcblas -lm
 # CFLAG= -std=c++17 -g -O0
+# Note spaces here instead of tabs - VERY IMPORTANT!
 ifeq ($(shell uname), Darwin)
-CFLAG += -w -I/opt/homebrew/opt/gsl/include -L/opt/homebrew/opt/gsl/lib
+    # Test if using homebrew or macports
+    ifneq ($(shell command -v brew 2>/dev/null),)
+        $(info Assuming GSL installed via homebrew...)
+        CFLAG += -w -I/opt/homebrew/opt/gsl/include -L/opt/homebrew/opt/gsl/lib
+    else ifneq ( $(shell command -v port 2>/dev/null),)
+        $(info Assuming GSL installed via MacPorts...)
+        CFLAG += -w -I/opt/local/include/ -L/opt/local/lib
+    else
+        $(error Could not find GSL library! Exiting...)
+    endif
 endif
 ROOTFLAG=`root-config --cflags --glibs`
 
