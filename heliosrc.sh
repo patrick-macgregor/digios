@@ -58,7 +58,7 @@ else
     HELIOSSYS=$(dirname ${SOURCE})
 
     if [[ ${HELIOSSYS} == *"$HOME"* ]]; then
-      dummpy=0
+      dummpy=0 # WHY IS THIS NEEDED?
     else
       HELIOSSYS=${HOME}/$HELIOSSYS
     fi

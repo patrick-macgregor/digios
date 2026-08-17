@@ -10,6 +10,9 @@ void ChainMonitors(int RUNNUM = -1, int RUNNUM2 = -1, bool saveCanvas = false, b
         /// this list only for manual Chain sort
         ///********** start Marker for AutoCalibration.
 
+        // Alpha source
+        chain->Add("../root_data/gen_run00[23].root");
+
         // Medium target 114 - runs 9-13
         chain->Add("../root_data/gen_run009.root");
         chain->Add("../root_data/gen_run01[0-3].root");

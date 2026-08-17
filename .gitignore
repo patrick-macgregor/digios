@@ -76,3 +76,5 @@ daq/null
 daq/trigger
 
 __pycache__
+
+analysis/working/original/*
