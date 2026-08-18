@@ -1,0 +1,5 @@
+-stdlib=libc++
+-pthread
+-std=c++17
+-m64
+-I/opt/local/libexec/root6/include/root

@@ -11,7 +11,7 @@
 #include <TSpectrum.h>
 #include <TGraph.h>
 #include <fstream>
-#include <TProof.h>
+// #include <TProof.h>
 #include "../Armory/Cali_littleTree_trace.h"
 #include "../Armory/Check_e_x.C"
 #include "../Armory/Cali_e_single.C"
