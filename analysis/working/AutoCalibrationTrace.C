@@ -160,21 +160,22 @@ void AutoCalibrationTrace(){
 
     if( option == 0 ) {
        Cali_xf_xn(chain);
-       return ;
+       return;
     }
 
     if( option == 1 ) {
        Cali_xf_xn_to_e(chain);
-       gROOT->ProcessLine(".q");
+       // gROOT->ProcessLine(".q");
+       return;
     }
 
     if( option == 2 ) {
 
-       printf("=============== Auto-Calibration Subrountine ====================\n");
+       printf("=============== Auto-Calibration Subroutine =====================\n");
        printf(" Step 1) Generate smaller root file to speed thing up.           \n");
        printf("         ** aware of the Gate in Armory/Cali_little_tree_trace.C \n");
        printf(" Step 2) Generate kinematics line using Cleopatra/Transfer    \n");
-       printf("         ** make sure you have correct A) reactoinConfig.txt    \n");
+       printf("         ** make sure you have correct A) reactionConfig.txt    \n");
        printf("                                       B) detGeometry.txt    \n");
        printf("                                       C) Ex.txt    \n");
        printf(" Step 3) Run the Calibration using Armory/Cali_compare_F.C   \n");

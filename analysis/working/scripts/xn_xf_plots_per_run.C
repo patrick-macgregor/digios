@@ -6,6 +6,8 @@
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TFile.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TProfile.h"
@@ -20,6 +22,39 @@ const std::vector<int> kRunNumbers = {
     14, 15, 16, 17,
     20, 21, 22, 23,
     24, 25
+};
+
+struct FitParameters{
+    double intercept;
+    double slope;
+    double error_intercept;
+    double error_slope;
+    double covariance_intercept_slope;
+    double chi2;
+    double ndf;
+    double prob;
+
+    FitParameters(TF1* fitfunc, TFitResultPtr r){
+        intercept = fitfunc->GetParameter(0);
+        slope = fitfunc->GetParameter(1);
+        error_intercept = fitfunc->GetParError(0);
+        error_slope = fitfunc->GetParError(1);
+        covariance_intercept_slope = r->CovMatrix(0,1);
+        chi2 = r->Chi2();
+        ndf = r->Ndf();
+        prob = r->Prob();
+    }
+
+    FitParameters(){
+        intercept = 0.0;
+        error_intercept = 0.0;
+        slope = 0.0;
+        error_slope = 0.0;
+        covariance_intercept_slope = 0.0;
+        chi2 = 0.0;
+        ndf = 0.0;
+        prob = 0.0;
+    }
 };
 
 
@@ -78,7 +113,7 @@ namespace{
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
-    void FitProfileToCorrectionHistograms(Double_t* slope, Double_t* intep, TCanvas* c, const int i, TH2F* d){
+    void FitProfileToCorrectionHistograms(TCanvas* c, const int i, TH2F* d, FitParameters*& fp){
         TF1 *fit = new TF1("fit", "pol1", 0, 3500);
 
         c->cd(i+1);
@@ -86,12 +121,18 @@ namespace{
         fit->SetParameter(0, 0);
         fit->SetParameter(1, 1);
 
-        d->Fit("fit", "qR");
+        TFitResultPtr p = d->Fit("fit", "qRS");
+        TString warn = "";
 
-        slope[i] = fit->GetParameter(1);
-        intep[i] = fit->GetParameter(0);
+        if(!p.Get()){
+            fp = new FitParameters();
+            warn = "[DUMMY]";
+        }
+        else{
+            fp = new FitParameters(fit,p);
+        }
 
-        printf("%2d, %9.6f, %9.6f \n", kRunNumbers[i], intep[i], slope[i]);
+        printf("%2d, %9.6f, %9.6f %s\n", kRunNumbers[i], fp->intercept, fp->slope, warn.Data());
 
         c->Update();
         gSystem->ProcessEvents();
@@ -101,7 +142,7 @@ namespace{
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
-    void SaveFitToFile(Double_t* slope, Double_t* intep, const int N, const int CHOSEN_DETECTOR){
+    void SaveFitToFile(const int N, const int CHOSEN_DETECTOR, FitParameters** fp){
         TString outfilename = Form("xnxf_detector_%d_fit_pars.txt", CHOSEN_DETECTOR);
         std::ofstream outfile;
         outfile.open(outfilename.Data());
@@ -111,14 +152,23 @@ namespace{
             return;
         }
 
-        outfile << "Run\tIntercept\tSlope\n";
+        outfile << "y = Mx + C\n";
+        outfile << "Run\t C\tE[C]\t M\tE[M]\t COV[M,C]\t Chi2\t Ndf\t Prob\n";
 
         for (int i = 0; i < N; ++i){
-            outfile << kRunNumbers[i] << "\t" << intep[i] << "\t" << slope[i] << "\n";
+            outfile << kRunNumbers[i] << "\t" <<
+                fp[i]->intercept << "\t" <<
+                fp[i]->error_intercept << "\t" <<
+                fp[i]->slope << "\t" <<
+                fp[i]->error_slope << "\t" <<
+                fp[i]->covariance_intercept_slope << "\t" <<
+                fp[i]->chi2 << "\t" <<
+                fp[i]->ndf << "\t" <<
+                fp[i]->prob << "\n";
         }
 
         outfile.close();
-        printf("file %s has been created", outfilename.Data());
+        printf("file %s has been created\n", outfilename.Data());
         return;
     }
 } // anon. namespace
@@ -140,10 +190,9 @@ void xn_xf_plots_per_run(const int CHOSEN_DETECTOR){
 
     // Create canvas
     gStyle->SetOptStat(11111111);
-    TCanvas* c = new TCanvas("CANVAS", "CANVAS", 2800, 1800);
+    TCanvas* c = new TCanvas(Form("DETECTOR %d", CHOSEN_DETECTOR), Form("DETECTOR %d", CHOSEN_DETECTOR), 2800, 1800);
     c->Divide(5,3); // HACK: this is hardcoded and may need to be changed!
-    Double_t* slope = new Double_t[kRunNumbers.size()];
-    Double_t* intep = new Double_t[kRunNumbers.size()];
+    FitParameters** fp = new FitParameters*[kRunNumbers.size()];
 
     for (std::size_t i = 0; i < kRunNumbers.size(); ++i){
         const int run = kRunNumbers[i];
@@ -167,7 +216,7 @@ void xn_xf_plots_per_run(const int CHOSEN_DETECTOR){
         c->cd(i+1);
         t->Draw(expr, cut);
         d->SetDirectory(0);
-        FitProfileToCorrectionHistograms(slope, intep, c, i, d);
+        FitProfileToCorrectionHistograms(c, i, d, fp[i]);
 
         // Close the file
         if (f->IsOpen())f->Close();
@@ -177,8 +226,14 @@ void xn_xf_plots_per_run(const int CHOSEN_DETECTOR){
     c->Update();
 
     // Plot fit curves
-    SaveFitToFile(slope, intep, kRunNumbers.size(), CHOSEN_DETECTOR);
+    SaveFitToFile(kRunNumbers.size(), CHOSEN_DETECTOR, fp);
     TString outfilename = Form("xnxf_detector_%d.pdf", CHOSEN_DETECTOR);
     c->SaveAs(outfilename);
+
+    // Delete fit parameters
+    for (std::size_t i = 0; i < kRunNumbers.size(); ++i){
+        delete fp[i];
+    }
+    delete[] fp;
 
 }

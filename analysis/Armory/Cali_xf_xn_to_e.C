@@ -104,9 +104,7 @@ namespace{
             TString expression;
             expression.Form("e[%d]:(xf[%d]+xn[%d] * %f)>> %s", i,i,i, xnCorr[i], name.Data());
             TString gate;
-            // gate.Form("e[%d]>0 && xf[%d]>0 && xn[%d]>0 && ring[%d] < 50",i, i, i, i);
             gate.Form("e[%d]>0 && xf[%d]>0 && xn[%d]>0",i, i, i);
-            //gate.Form("e[%d]>0 && xf[%d]>0 && xn[%d]>0 && TMath::Abs(xf[%d] - xn[%d]*%f)< 100",i, i, i, i, i, xnCorr[i]);
 
             cCali_xf_xn_e->cd(i+1);
             tree->Draw(expression, gate, "");
@@ -167,17 +165,8 @@ namespace{
 } // anon. namespace
 
 
-
-
-
-
-
-
 void Cali_xf_xn_to_e(TTree *tree){
     /**///======================================================== initial input
-
-    int energyRange[2] = {500, 5000};
-
     gStyle->SetOptStat(11111111);
 
     printf("============================================================= \n");
@@ -209,47 +198,10 @@ void Cali_xf_xn_to_e(TTree *tree){
     Double_t* intep = new Double_t[nDet];
     FitProfileToCorrectionHistograms(slope, intep, cCali_xf_xn_e, nDet, d);
 
-    //===== plot particular detector to examine further <PTM>
-    TCanvas* cPTM = new TCanvas("cPTM", "cPTM", 1400, 900);
-    cPTM->cd();
-    const int CHOSEN_DETECTOR = 13;
-    TH2F* h2 = new TH2F("CHOSEN", "CHOSEN", 200, 0, 5000, 200, 0, 5000);
-    h2->SetXTitle("xf+xn");
-    h2->SetYTitle("e");
-    TString expression = Form("e[%d]:(xf[%d]+xn[%d] * %f)>>CHOSEN", CHOSEN_DETECTOR, CHOSEN_DETECTOR, CHOSEN_DETECTOR, xnCorr[CHOSEN_DETECTOR]);
-    TString gate = Form("e[%d]>0 && xf[%d]>0 && xn[%d]>0",CHOSEN_DETECTOR, CHOSEN_DETECTOR, CHOSEN_DETECTOR);
-    tree->Draw(expression, gate, "");
-    cPTM->Modified(); cPTM->Update();
-    gSystem->ProcessEvents();
-    // </PTM>
-
     //===== save correction parameter
     SaveCorrectionParameters(nDet, intep, slope);
     printf("=========== save xfxn-e-correction parameters to %s \n", "correction_xfxn_e.dat");
 
-        //cCali_xf_xn_e->SaveAs("xfxn_e_correction.pdf");
-        //printf("=========== save canvas to %s \n", "xfxn_e.pdf");
-
 }
-    /*
-    // make correction
-    TH2F ** dc = new TH2F[nDet];
-    for( int i = 0; i < nDet; i ++){
-    TString name;
-    name.Form("dc%d", i);
-    dc[i] = new TH2F(name, name , 300, -100 , 3500 , 300, -100 , 3500);
-    dc[i]->SetXTitle("xf+xn");
-    dc[i]->SetYTitle("e");
-
-    TString expression;
-    expression.Form("e[%d]:%f*(xf[%d]+xn[%d])+%f>> dc%d" , i, slope[i] , i,i, intep[i], i);
-    TString gate;
-    gate.Form("e[%d]!=0 && xf[%d]!=0 && xn[%d]!=0",i,i,i);
-    //gate.Form("xf[%d]!=0 && xn[%d]!=0",i,i);
-    tree->Draw(expression, gate , "");
-
-    //printf("========  i = %d \n", i);
-    }
-    */
 
 
