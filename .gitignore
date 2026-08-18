@@ -77,4 +77,7 @@ daq/trigger
 
 __pycache__
 
+# PTM
 analysis/working/original/*
+analysis/working/scripts/*.txt
+analysis/working/scripts/*.pdf
