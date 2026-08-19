@@ -81,3 +81,5 @@ __pycache__
 analysis/working/original/*
 analysis/working/scripts/*.txt
 analysis/working/scripts/*.pdf
+analysis/working/fits/
+analysis/working/plots/

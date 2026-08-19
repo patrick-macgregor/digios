@@ -40,14 +40,14 @@ namespace{
         rowDet = detGeo.mDet;
         nDet = colDet * rowDet;
         delete haha;
-
+        return;
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     double* LoadXNXFCorrection(const int nDet){
         double* xnCorr = new double[nDet];
         std::ifstream file;
-        file.open("correction_xf_xn.dat");
+        file.open("correction_xf_xn_.dat");
         if( file.is_open() ){
             double a;
             int i = 0;
@@ -84,6 +84,7 @@ namespace{
         gStyle->SetStatX(0.99);
         gStyle->SetStatW(0.2);
         gStyle->SetStatH(0.1);
+        gStyle->SetLineScalePS(1);
 
         if(cCali_xf_xn_e->GetShowEditor())cCali_xf_xn_e->ToggleEditor();
         if(cCali_xf_xn_e->GetShowToolBar())cCali_xf_xn_e->ToggleToolBar();
@@ -139,7 +140,7 @@ namespace{
         }
 
         cCali_xf_xn_e->Update();
-
+        return;
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
@@ -148,18 +149,19 @@ namespace{
         printf("0 for end, 1 for save e-xf+xn correction: ");
         int temp = scanf("%d", &dummy);
         if( dummy == 0 ) return;
-        if( dummy == 1 ){
 
-            FILE * paraOut;
-            paraOut = fopen ("correction_xfxn_e.dat", "w+");
+        FILE * paraOut;
+        TString name ="correction_xfxn_e_.dat";
+        paraOut = fopen (name.Data(), "w+");
 
-            for( int i = 0; i < nDet; i++){
-                fprintf(paraOut, "%9.6f  %9.6f\n", intep[i], slope[i]);
-            }
-
-            fflush(paraOut);
-            fclose(paraOut);
+        for( int i = 0; i < nDet; i++){
+            fprintf(paraOut, "%9.6f  %9.6f\n", intep[i], slope[i]);
         }
+
+        fflush(paraOut);
+        fclose(paraOut);
+        printf("=========== save xfxn-e-correction parameters to %s \n",name.Data());
+        return;
     }
 } // anon. namespace
 
@@ -175,23 +177,16 @@ void Cali_xf_xn_to_e(TTree *tree){
     printf("------------------------------------------------------------- \n");
     printf("=========== Total #Entry: %10lld \n", tree->GetEntries());
 
-    /**///========================================================= load parameters
     int colDet, rowDet, nDet;
     printf("======================= loading parameters files .... \n");
     LoadDetectorGeometry(colDet, rowDet, nDet);
     printf("----- loading xf-xn correction.");
     double* xnCorr = LoadXNXFCorrection(nDet);
 
-    /**///======================================================== Browser or Canvas
     TCanvas* cCali_xf_xn_e = CreateCorrectionCanvas(nDet, rowDet, colDet);
-
-    /**///========================================================= Analysis
-
-    //======== create histogram for each detector
     printf("creating xf-xn histogram for each detector.... please wait.\n");
     TH2F ** d = Create2DCorrectionHistograms(cCali_xf_xn_e, nDet, xnCorr, tree);
 
-    //======== profileX
     printf("fitting slope.\n");
     Double_t* slope = new Double_t[nDet];
     Double_t* intep = new Double_t[nDet];
@@ -199,8 +194,10 @@ void Cali_xf_xn_to_e(TTree *tree){
 
     //===== save correction parameter
     SaveCorrectionParameters(nDet, intep, slope);
-    printf("=========== save xfxn-e-correction parameters to %s \n", "correction_xfxn_e.dat");
-
+    TString name = "plots/xnxf_e_calibration.pdf";
+    cCali_xf_xn_e->SaveAs(name);
+    printf("Written %s to disk\n", name.Data());
+    return;
 }
 
 

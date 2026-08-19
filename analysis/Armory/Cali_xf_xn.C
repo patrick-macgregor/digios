@@ -76,6 +76,7 @@ namespace{
         gStyle->SetStatX(0.99);
         gStyle->SetStatW(0.2);
         gStyle->SetStatH(0.1);
+        gStyle->SetLineScalePS(1);
 
         if (cAlpha->GetShowEditor())cAlpha->ToggleEditor();
         if (cAlpha->GetShowToolBar())cAlpha->ToggleToolBar();
@@ -84,24 +85,28 @@ namespace{
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void InitialiseAlphaSpectraHistograms(int* energyRange, TTree* tree, TCanvas* cAlpha, TH1F**& q, TString*& gate){
-        for( int i = 0; i < numDet; i ++){
+        for( int i = 0; i < numDet; i++){
             TString name;
             name.Form("q%d", i);
             q[i] = new TH1F(name, name, energyRange[0], energyRange[1], energyRange[2]);
+            q[i]->SetLineWidth(1);
             q[i]->SetXTitle(name);
 
             TString expression;
-            expression.Form("e[%d] >> q%d" ,i, i);
+            expression.Form("e[%d] >> q%d",i, i);
             //gate[i].Form("ring[%d]==0 && !TMath::IsNaN(xf[%d]) && !TMath::IsNaN(xn[%d])", i, i, i);
             //gate[i].Form("!TMath::IsNaN(xf[%d]) && !TMath::IsNaN(xn[%d])", i, i);
             //gate[i].Form("e[%d] > 0", i);
 
             cAlpha->cd(i+1);
-            tree->Draw(expression, gate[i] , "");
+            tree->Draw(expression, gate[i], "");
             cAlpha->Update();
             gSystem->ProcessEvents();
         }
-
+        // For some reason these lines are needed
+        cAlpha->Update();
+        gSystem->ProcessEvents();
+        return;
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
@@ -118,7 +123,7 @@ namespace{
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void FindPeaksUsingTSpectrumClass(double& threshold, TH1F**& q, std::array<std::vector<double>,numDet>& energy, TCanvas*& cAlpha){
-        printf("---- finding peak using TSpectrum Class...\n");
+        printf("------ finding peak using TSpectrum Class...\n");
 
         printf(" peak threshold (default = %.3f) : ", threshold);
         scanf("%lf", &threshold);
@@ -159,7 +164,7 @@ namespace{
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void FindPeaksUsingAutoFit(TCanvas* cAlpha, std::array<std::vector<double>,numDet>& energy, TH1F**& q){
-        printf("---- find and fit peak with Gaussian using AutoFit.C \n");
+        printf("------ find and fit peak with Gaussian using AutoFit.C \n");
         for( int i = 0; i < numDet; i++){
             cAlpha->cd(i+1);
             energy[i] = fitAuto(q[i], -1, 0.3, 20, 4, "");
@@ -192,6 +197,7 @@ namespace{
     void UseDetectorAsReference(std::array<std::vector<double>,numDet>& energy, std::vector<double>& refEnergy, const int refID){
         int n = energy[refID].size();
         for (int k = 0; k < n; k++) refEnergy.push_back(energy[refID][k]);
+        return;
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
@@ -232,7 +238,7 @@ namespace{
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void DoCalibration(std::array<std::vector<double>,numDet>& energy, std::vector<double>& refEnergy, const int refID, TCanvas*& cAlpha, std::array<FitParameters,numDet>& fp){
         for( int i = 0; i < numDet; i ++){
-            printf("------- refID - %d, nPeaks: %lu \n", i, energy[i].size());
+            printf("------ refID - %d, nPeaks: %lu \n", i, energy[i].size());
 
             if ( refID >= 0 && refID == i ){
                 fp[i] = FitParameters();
@@ -263,12 +269,17 @@ namespace{
 
             TF1* fit = new TF1("fit", "pol1" );
             TFitResultPtr r = graph->Fit("fit", "qS");
-            fp[i] = FitParameters(fit, r);
+            if (r.Get()){
+                fp[i] = FitParameters(fit, r);
+            }
+            else{
+                fp[i] = FitParameters();
+            }
 
             printf("%2d | a0: %6.3f, a1: %6.3f (%14.8f) \n", i, fp[i].intercept, fp[i].slope, 1./fp[i].slope);
 
         }
-
+        return;
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
@@ -308,9 +319,14 @@ namespace{
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void SaveEAlphaFitParameters(const std::array<FitParameters, numDet>& fp){
+        printf("0 for no-save, any other integer for save e-alpha calibration: ");
+        int dummy = 0;
+        scanf("%d", &dummy);
+        if ( dummy == 0 ) return;
+
         FILE* paraOut;
         TString filename;
-        filename.Form("correction_e_alpha.dat");
+        filename.Form("correction_e_alpha_.dat");
         paraOut = fopen (filename.Data(), "w+");
         printf("=========== save e-correction parameters to %s \n", filename.Data());
         for( int i = 0; i < numDet; i++){
@@ -354,6 +370,7 @@ namespace{
             gSystem->ProcessEvents();
 
         }
+        // For some reason these lines are needed
         cAlpha->Update();
         gSystem->ProcessEvents();
         return;
@@ -408,30 +425,32 @@ namespace{
             cAlpha->Update();
             gSystem->ProcessEvents();
         }
-
+        // For some reason these lines are needed
         cAlpha->Update();
         gSystem->ProcessEvents();
+
+        return;
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void SaveXNXFCorrectionParameters(const std::array<FitParameters,numDet>& fpxnxf){
+        printf("0 for no-save, any other integer for save xf-xn-correction : ");
         int dummy = 0;
-        int temp2 = scanf("%d", &dummy);
+        scanf("%d", &dummy);
         if ( dummy == 0 ) return;
-        if ( dummy == 1 ){
-            FILE* paraOut;
-            TString filename;
-            filename.Form("correction_xf_xn.dat");
-            paraOut = fopen (filename.Data(), "w+");
-            printf("=========== save xf_xn-correction parameters to %s \n", filename.Data());
-            for( int i = 0; i < numDet; i++){
-                fprintf(paraOut, "%9.6f\n", -fpxnxf[i].slope);
-            }
-            fflush(paraOut);
-            fclose(paraOut);
-            //cAlpha->SaveAs("alpha_xf_xn_corrected.pdf");
-        }
 
+        FILE* paraOut;
+        TString filename;
+        filename.Form("correction_xf_xn_.dat");
+        paraOut = fopen (filename.Data(), "w+");
+        printf("=========== save xf_xn-correction parameters to %s \n", filename.Data());
+        for( int i = 0; i < numDet; i++){
+            fprintf(paraOut, "%9.6f\n", -fpxnxf[i].slope);
+        }
+        fflush(paraOut);
+        fclose(paraOut);
+        //cAlpha->SaveAs("alpha_xf_xn_corrected.pdf");
+        return;
     }
 } // anon. namespace
 
@@ -466,6 +485,9 @@ void Cali_xf_xn(TTree* tree){
 
     if ( method == 2 )     FindPeaksUsingTSpectrumClass(threshold, q, energy, cAlpha);
     else if ( method == 3) FindPeaksUsingAutoFit(cAlpha, energy, q);
+    TString name = "plots/alpha_calibration.pdf";
+    cAlpha->SaveAs(name);
+    printf("Saved %s\n", name.Data());
 
     //------------ 3, correction
     int refID = GetDetectorToBeTheReferenceFromUser();
@@ -475,7 +497,7 @@ void Cali_xf_xn(TTree* tree){
     else if (refID == -2) Use228ThAsReference(refEnergy);
     else if (refID == -3) Use148Gd244CmAsReference(refEnergy);
 
-    printf("----- adjusting the energy to det-%d......\n", refID);
+    printf("------ adjusting the energy to det-%d......\n", refID);
     for( int k = 0; k < refEnergy.size(); k++) printf("%2d-th peak : %f \n", k,  refEnergy[k]);
 
     const std::vector<double> refEnergy0 = refEnergy;
@@ -490,22 +512,23 @@ void Cali_xf_xn(TTree* tree){
     printf("############## xf - xn correction \n");
     double eGate = GetEGate(refEnergy);
 
-    printf("----- plotting xf vs xn with energy gate near the peak...\n");
+    printf("------ plotting xf vs xn with energy gate near the peak...\n");
     TH2F** h = new TH2F*[numDet];
     PlotXNXFHistograms(h,cAlpha,energyRange,gate,tree,eGate,fp);
 
-    printf("----- profile and obtain the fit function...\n");
+    printf("------ profile and obtain the fit function...\n");
     std::array<FitParameters,numDet> fpxnxf;
     FitXNXFProfileFunction(cAlpha, energy, h, fpxnxf);
 
-    printf("----- correcting...\n");
+    printf("------ correcting...\n");
     CorrectXNXFFunctions(energyRange, fpxnxf, cAlpha, tree, gate);
     //
     //--------- 4, pause for saving correction parameter
-    printf("0 for stop, 1 for save xf-xn-correction : ");
     SaveXNXFCorrectionParameters(fpxnxf);
+    name = "plots/xnxf_calibration.pdf";
+    cAlpha->SaveAs(name);
+    printf("Saved %s\n", name.Data());
     return;
-
 }
 
 
