@@ -154,7 +154,6 @@ namespace{
             paraOut = fopen ("correction_xfxn_e.dat", "w+");
 
             for( int i = 0; i < nDet; i++){
-
                 fprintf(paraOut, "%9.6f  %9.6f\n", intep[i], slope[i]);
             }
 
