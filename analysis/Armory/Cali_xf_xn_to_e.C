@@ -14,7 +14,7 @@
 #include <fstream>
 #include "../Armory/AnalysisLibrary.h"
 
-namespace{
+namespace calibrationxfxne{
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     void LoadDetectorGeometry(int& colDet, int& rowDet, int& nDet){
         std::string detGeoFileName = "detectorGeo.txt";
@@ -70,7 +70,7 @@ namespace{
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
     TCanvas* CreateCorrectionCanvas(const int nDet, const int rowDet, const int colDet){
-        Int_t Div[2] = {colDet,rowDet};  //x,y
+        Int_t Div[2] = {colDet,rowDet}; //x,y
         Int_t size[2] = {230,230}; //x,y
         TCanvas * cCali_xf_xn_e = new TCanvas("cCali_xf_xn_e", "cCali_xf_xn_e", 0, 0, size[0]*Div[0], size[1]*Div[1]);
         cCali_xf_xn_e->Divide(Div[0],Div[1]);
@@ -179,21 +179,21 @@ void Cali_xf_xn_to_e(TTree *tree){
 
     int colDet, rowDet, nDet;
     printf("======================= loading parameters files .... \n");
-    LoadDetectorGeometry(colDet, rowDet, nDet);
+    calibrationxfxne::LoadDetectorGeometry(colDet, rowDet, nDet);
     printf("----- loading xf-xn correction.");
-    double* xnCorr = LoadXNXFCorrection(nDet);
+    double* xnCorr = calibrationxfxne::LoadXNXFCorrection(nDet);
 
-    TCanvas* cCali_xf_xn_e = CreateCorrectionCanvas(nDet, rowDet, colDet);
+    TCanvas* cCali_xf_xn_e = calibrationxfxne::CreateCorrectionCanvas(nDet, rowDet, colDet);
     printf("creating xf-xn histogram for each detector.... please wait.\n");
-    TH2F ** d = Create2DCorrectionHistograms(cCali_xf_xn_e, nDet, xnCorr, tree);
+    TH2F ** d = calibrationxfxne::Create2DCorrectionHistograms(cCali_xf_xn_e, nDet, xnCorr, tree);
 
     printf("fitting slope.\n");
     Double_t* slope = new Double_t[nDet];
     Double_t* intep = new Double_t[nDet];
-    FitProfileToCorrectionHistograms(slope, intep, cCali_xf_xn_e, nDet, d);
+    calibrationxfxne::FitProfileToCorrectionHistograms(slope, intep, cCali_xf_xn_e, nDet, d);
 
     //===== save correction parameter
-    SaveCorrectionParameters(nDet, intep, slope);
+    calibrationxfxne::SaveCorrectionParameters(nDet, intep, slope);
     TString name = "plots/xnxf_e_calibration.pdf";
     cCali_xf_xn_e->SaveAs(name);
     printf("Written %s to disk\n", name.Data());
