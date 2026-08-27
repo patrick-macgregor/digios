@@ -1,26 +1,25 @@
 #include "Monitors.h"
 
-#include <TBox.h>
-#include <TCanvas.h>
-#include <TCutG.h>
-#include <TDatime.h>
-#include <TF1.h>
+#include "TBox.h"
+#include "TCanvas.h"
+#include "TCutG.h"
+#include "TDatime.h"
+#include "TF1.h"
 #include "TFile.h"
-#include <TGraph.h>
-#include <TH1.h>
-#include <TH2.h>
-#include <TLatex.h>
-#include <TLine.h>
-#include <TMacro.h>
-#include <TMath.h>
-#include <TMD5.h>
-#include <TMultiGraph.h>
-#include <TObjArray.h>
+#include "TGraph.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TLatex.h"
+#include "TLine.h"
+#include "TMacro.h"
+#include "TMath.h"
+#include "TMD5.h"
+#include "TMultiGraph.h"
+#include "TObjArray.h"
 #include "TROOT.h"
-#include <TStopwatch.h>
-#include <TString.h>
-#include <TStyle.h>
-#include <TSystem.h>
+#include "TString.h"
+#include "TStyle.h"
+#include "TSystem.h"
 
 
 #include <fstream>
@@ -28,7 +27,6 @@
 
 #include "../Cleopatra/Isotope.h"
 #include "GeneralSortMapping.h"
-#include "../Armory/Monitors_Util.h"
 
 //############################################ User setting
 
@@ -1409,9 +1407,9 @@ void Monitors::Terminate()
    /************************************/
    StpWatch.Start(kFALSE);
    
-   // gROOT->ProcessLine(".L ../Armory/Monitors_Util.C");
+   gROOT->ProcessLine(".L ../Armory/Monitors_Util.C+");
    //gROOT->ProcessLine(Form("FindBesCanvasDivision(%d)", numDet));
-   // printf("=============== loaded Monitors_Utils.C\n");
+   printf("=============== loaded Monitors_Utils.C\n");
    gROOT->ProcessLine(".L ../Armory/AutoFit.C");
    printf("=============== loaded Armory/AutoFit.C\n");
    gROOT->ProcessLine(".L ../Armory/RDTCutCreator.C");
@@ -1422,7 +1420,7 @@ void Monitors::Terminate()
    // printf("=============== loaded Armory/readTrace.C\n");
    // gROOT->ProcessLine(".L ../Armory/readRawTrace.C");
    // printf("=============== loaded Armory/readRawTrace.C\n");
-   // gROOT->ProcessLine("listDraws()");
+   gROOT->ProcessLine("listDraws()");
    
    /************************* Save histograms to root file*/
    

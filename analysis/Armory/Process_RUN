@@ -105,13 +105,13 @@ echo "============================================="
 #################### Monitor
 
 if [ $isMonitor -eq 1 ] ; then
-  root -l "../Armory/Monitors_Util.C+" "Monitors.C+" "ChainMonitors.C($RUN, -1, false, ${traceFlag})" # single run
+  root -l "Monitors.C+" "ChainMonitors.C($RUN, -1, false, ${traceFlag})" # single run
 elif [ $isMonitor -eq 2 ] ; then
-  root -l "../Armory/Monitors_Util.C+" "Monitors.C+" "ChainMonitors.C(-1,-1, false, ${traceFlag})"  #all runs listed 
+  root -l "Monitors.C+" "ChainMonitors.C(-1,-1, false, ${traceFlag})"  #all runs listed 
 elif [ $isMonitor -eq 20 ] ; then
-  root -l "../Armory/Monitors_Util.C+" "Monitors.C+" "ChainMonitors.C(-1,-1, true, ${traceFlag})"
+  root -l "Monitors.C+" "ChainMonitors.C(-1,-1, true, ${traceFlag})"
 elif [ $isMonitor -eq 10 ] ; then
-  root -l "../Armory/Monitors_Util.C+" "Monitors.C+" "ChainMonitors.C(${RUN},-1, true, ${traceFlag})"  
+  root -l "Monitors.C+" "ChainMonitors.C(${RUN},-1, true, ${traceFlag})"  
 fi  
 
   

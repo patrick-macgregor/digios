@@ -1,4 +1,5 @@
-#include "Monitors.C+" // the plus sign mean compilation
+#include "Monitors.h" // the plus sign mean compilation
+#include "TChain.h"
 
 void ChainMonitors(int RUNNUM = -1, int RUNNUM2 = -1, bool saveCanvas = false, bool isTraceON = false)
 {
@@ -9,22 +10,21 @@ void ChainMonitors(int RUNNUM = -1, int RUNNUM2 = -1, bool saveCanvas = false, b
     if ( RUNNUM == -1){
         /// this list only for manual Chain sort
         ///********** start Marker for AutoCalibration.
-
         // Alpha source
-        chain->Add("../root_data/gen_run00[23].root");
+        // chain->Add("../root_data/trace_run00[23].root");
 
         // Medium target 114 - runs 9-13
         chain->Add("../root_data/gen_run009.root");
-        chain->Add("../root_data/gen_run01[0-3].root");
+        // chain->Add("../root_data/gen_run01[0-3].root");
 
         // Thin target 88 - runs 14-17, [fix DAQ], 20-23
-        chain->Add("../root_data/gen_run01[4-7].root");
-        chain->Add("../root_data/gen_run02[0-3].root");
+        // chain->Add("../root_data/gen_run01[4-7].root");
+        // chain->Add("../root_data/gen_run02[0-3].root");
 
         // Junk runs 18-19
 
         // "Thick" target 119 24-25
-        chain->Add("../root_data/gen_run02[4-5].root");
+        // chain->Add("../root_data/gen_run02[4-5].root");
 
         // Background run 26
 
