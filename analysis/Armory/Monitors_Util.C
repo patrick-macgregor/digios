@@ -1,66 +1,59 @@
-#ifndef Monitor_Utilities
-#define Monitor_Utilities
+#include "Monitors_Util.h"
 
-//This file runs after on Monitor.C
-//This file is parasite on Monitor.C
-
-#include <iostream>
+#include "TBox.h"
 #include "TCanvas.h"
-#include "TString.h"
+#include "TLine.h"
 #include "TMath.h"
-
-#include "../working/GeneralSortMapping.h"
-
-#include "../working/Monitors.C"
+#include "TROOT.h"
+#include "TString.h"
+#include "TStyle.h"
 
 int canvasSize[2] = {2000, 1200};
-#define NCOL  (NARRAY / NROW) // 12 detectors, 3 rows
 
-void listDraws(void) {
-  printf("------------------- List of Plots -------------------\n");
-  printf("  newCanvas() - Create a new Canvas\n");
-  printf("-----------------------------------------------------\n");
-  printf("      rawID() - Raw \033[0;31me\033[0m, \033[0;31mring\033[0m, \033[0;31mxf\033[0m, \033[0;31mxn\033[0m vs detID\n");
-  printf("       rawe() - Raw \033[0;31me\033[0m for all %d detectors\n", NARRAY);
-  printf("    rawring() - Raw \033[0;31mring\033[0m for all %d detectors\n", NARRAY);
-  printf("      rawxf() - Raw \033[0;31mxf\033[0m for all %d detectors\n", NARRAY);
-  printf("      rawxn() - Raw \033[0;31mxn\033[0m for all %d detectors\n", NARRAY);
-  printf("     eVring() - Raw \033[0;31me\033[0m vs. \033[0;31mring\033[0m for all %d detectors\n", NARRAY);
-  printf("      xfVxn() - Raw \033[0;31mxf\033[0m vs. \033[0;31mxn\033[0m for all %d detectors\n", NARRAY);
-  printf("       eVxs() - Raw \033[0;31me\033[0m vs. Raw \033[0;31mxs = xf + xn\033[0m for all %d detectors\n", NARRAY);
-  printf("        eVx() - Raw \033[0;31me\033[0m vs. RAW \033[0;31mx\033[0m for all %d detectors\n", NARRAY);
-  printf("     ringVx() - Raw \033[0;31mring\033[0m vs. RAW \033[0;31mx\033[0m for all %d detectors\n", NARRAY);
-  printf("-----------------------------------------------------\n");
-  printf("    eVxsCal() - Raw \033[0;31me\033[0m vs. Corrected \033[0;31mxs\033[0m for all %d detectors\n", NARRAY);
-  printf("       ecal() - Calibrated \033[0;31me\033[0m for all %d detectors\n", NARRAY);
-  printf("      ecal2() - Calibrated \033[0;31me\033[0m for all %d detectors (same row or same col)\n", NARRAY);
-  printf("xfCalVxnCal() - Calibrated \033[0;31mxf\033[0m vs. \033[0;31mxn\033[0m for all %d detectors\n", NARRAY);
-  printf("-----------------------------------------------------\n");
-  printf("  eCalVxCal() - Cal \033[0;31me\033[0m vs. \033[0;31mx\033[0m for all %d detectors\n", NARRAY);
-  printf("-----------------------------------------------------\n");
-  printf("    recoils() - Raw DE vs. E Recoil spectra\n");
-  printf("       elum() - Luminosity Energy Spectra\n");
-  printf("         ic() - Ionization Chamber Spectra\n");
-  printf("-----------------------------------------------------\n");
-  printf("     eCalVz() - Energy vs. Z\n");
-  printf("  eCalVzRow() - Energy vs. Z for each row\n");
-  printf(" eCalVzRowG() - Energy vs. Z for each row (Gated)\n");
-  printf("     excite() - Excitation Energy\n");
-  printf("  ExThetaCM() - Ex vs ThetaCM\n");
-  printf("    ExVxCal() - Ex vs X for all %d detectors\n", NARRAY);
-  //printf("    eSVeRaw() - e(Ex,z) vs eRaw for all %d detectors\n", NARRAY);
-  printf("-----------------------------------------------------\n");
-  printf("   ShowFitMethod() - Shows various fitting methods \n");
-  printf("   RDTCutCreator() - Create RDT Cuts [May need to edit]\n");
-  printf("   Check_rdtGate() - Check RDT Cuts.  \n");
-  // printf("       readTrace() - read trace from trace_runXXX.root \n");
-  // printf("    readRawTrace() - read trace from runXXX.root \n");
-//  printf("         Check1D() - Count Integral within a range\n");
-  printf("-----------------------------------------------------\n");
-  printf("   %s\n", canvasTitle.Data());
-  printf("-----------------------------------------------------\n");
+void listDraws(const TString& canvasTitle) {
+    printf("------------------- List of Plots -------------------\n");
+    printf("  newCanvas() - Create a new Canvas\n");
+    printf("-----------------------------------------------------\n");
+    printf("      rawID() - Raw \033[0;31me\033[0m, \033[0;31mring\033[0m, \033[0;31mxf\033[0m, \033[0;31mxn\033[0m vs detID\n");
+    printf("       rawe() - Raw \033[0;31me\033[0m for all %d detectors\n", NARRAY);
+    printf("    rawring() - Raw \033[0;31mring\033[0m for all %d detectors\n", NARRAY);
+    printf("      rawxf() - Raw \033[0;31mxf\033[0m for all %d detectors\n", NARRAY);
+    printf("      rawxn() - Raw \033[0;31mxn\033[0m for all %d detectors\n", NARRAY);
+    printf("     eVring() - Raw \033[0;31me\033[0m vs. \033[0;31mring\033[0m for all %d detectors\n", NARRAY);
+    printf("      xfVxn() - Raw \033[0;31mxf\033[0m vs. \033[0;31mxn\033[0m for all %d detectors\n", NARRAY);
+    printf("       eVxs() - Raw \033[0;31me\033[0m vs. Raw \033[0;31mxs = xf + xn\033[0m for all %d detectors\n", NARRAY);
+    printf("        eVx() - Raw \033[0;31me\033[0m vs. RAW \033[0;31mx\033[0m for all %d detectors\n", NARRAY);
+    printf("     ringVx() - Raw \033[0;31mring\033[0m vs. RAW \033[0;31mx\033[0m for all %d detectors\n", NARRAY);
+    printf("-----------------------------------------------------\n");
+    printf("    eVxsCal() - Raw \033[0;31me\033[0m vs. Corrected \033[0;31mxs\033[0m for all %d detectors\n", NARRAY);
+    printf("       ecal() - Calibrated \033[0;31me\033[0m for all %d detectors\n", NARRAY);
+    printf("      ecal2() - Calibrated \033[0;31me\033[0m for all %d detectors (same row or same col)\n", NARRAY);
+    printf("xfCalVxnCal() - Calibrated \033[0;31mxf\033[0m vs. \033[0;31mxn\033[0m for all %d detectors\n", NARRAY);
+    printf("-----------------------------------------------------\n");
+    printf("  eCalVxCal() - Cal \033[0;31me\033[0m vs. \033[0;31mx\033[0m for all %d detectors\n", NARRAY);
+    printf("-----------------------------------------------------\n");
+    printf("    recoils() - Raw DE vs. E Recoil spectra\n");
+    printf("       elum() - Luminosity Energy Spectra\n");
+    printf("         ic() - Ionization Chamber Spectra\n");
+    printf("-----------------------------------------------------\n");
+    printf("     eCalVz() - Energy vs. Z\n");
+    printf("  eCalVzRow() - Energy vs. Z for each row\n");
+    printf(" eCalVzRowG() - Energy vs. Z for each row (Gated)\n");
+    printf("     excite() - Excitation Energy\n");
+    printf("  ExThetaCM() - Ex vs ThetaCM\n");
+    printf("    ExVxCal() - Ex vs X for all %d detectors\n", NARRAY);
+    //printf("    eSVeRaw() - e(Ex,z) vs eRaw for all %d detectors\n", NARRAY);
+    printf("-----------------------------------------------------\n");
+    printf("   ShowFitMethod() - Shows various fitting methods \n");
+    printf("   RDTCutCreator() - Create RDT Cuts [May need to edit]\n");
+    printf("   Check_rdtGate() - Check RDT Cuts.  \n");
+    // printf("       readTrace() - read trace from trace_runXXX.root \n");
+    // printf("    readRawTrace() - read trace from runXXX.root \n");
+    //  printf("         Check1D() - Count Integral within a range\n");
+    printf("-----------------------------------------------------\n");
+    printf("   %s\n", canvasTitle.Data());
+    printf("-----------------------------------------------------\n");
 }
-
 
 int xD, yD;
 void FindBesCanvasDivision(int nPad){
@@ -556,4 +549,4 @@ void Count1DH(TString name, TH1F * hist, TCanvas * canvas, int padID,  double x1
 
 
 
-#endif 
+

@@ -1,265 +1,37 @@
-#ifndef Monitors_cxx
-#define Monitors_cxx
+#include "Monitors.h"
 
-#include <TH2.h>
-#include <TH1.h>
-#include <TF1.h>
-#include <TStyle.h>
-#include <TCutG.h>
-#include <TGraph.h>
-#include <TMath.h>
-#include <TMultiGraph.h>
-#include <TString.h>
-#include <TLatex.h>
-#include <TSystem.h>
-#include <TMacro.h>
-#include <TLine.h>
-#include <TStopwatch.h>
-#include <TCanvas.h>
 #include <TBox.h>
+#include <TCanvas.h>
+#include <TCutG.h>
 #include <TDatime.h>
+#include <TF1.h>
+#include "TFile.h"
+#include <TGraph.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TLatex.h>
+#include <TLine.h>
+#include <TMacro.h>
+#include <TMath.h>
 #include <TMD5.h>
+#include <TMultiGraph.h>
 #include <TObjArray.h>
+#include "TROOT.h"
+#include <TStopwatch.h>
+#include <TString.h>
+#include <TStyle.h>
+#include <TSystem.h>
+
+
 #include <fstream>
 #include <vector>
+
 #include "../Cleopatra/Isotope.h"
 #include "GeneralSortMapping.h"
-
-using namespace std;
+#include "../Armory/Monitors_Util.h"
 
 //############################################ User setting
-#define NROW 4 // number of side of array
 
-//---histogram setting
-int rawEnergyRange[2] = {     100,    3000};       /// share with e, ring, xf, xn
-int    energyRange[2] = {     0,     14};       /// in the E-Z plot
-int     rdtDERange[2] = {     0,    1500}; 
-int      rdtERange[2] = {     0,    1500};  
-int    apolloRange[2] = {     0,    1000};
-int      crdtRange[2] = {     0,    8000};
-int      elumRange[2] = {     0,    16000};
-int       TACRange[3] = { 300,   2000,   6000};  /// #bin, min, max
-int      TAC2Range[3] = { 100,    400,    500};
-int   thetaCMRange[2] = {0, 80};
-
-double     exRange[3] = {  40,    -2,     10};  /// bin [keV], low[MeV], high[MeV]
-
-int  coinTimeRange[2] = { -200, 200};
-int  timeRangeUser[2] = {0, 99999999}; /// min, use when cannot find time, this set the min and max
-
-int  icRange [3] = {1000, 1000, 500}; /// max of IC0,1,2 
-
-bool isUseArrayTrace = false;
-bool isUseRDTTrace = true;
-
-//---Gate
-bool isTimeGateOn     = true;
-int timeGate[2]       = {-30, 20};             /// min, max, 1 ch = 10 ns
-double eCalCut[2]     = {0.5, 50};             /// lower & higher limit for eCal
-bool  isTACGate       = false;
-int tacGate[2]        = {-8000, -2000};
-int dEgate[2]         = {  500,  1500};
-int Eresgate[2]       = { 1000,  4000};
-double thetaCMGate    = 10;                    /// deg
-double xGate          = 0.8;                  ///cut out the edge
-vector<int> skipDetID = {2, 11, 20, 21}; 
-
-TString rdtCutFile1 = "rdtCuts.root";//"test_gate_17N.root";
-TString rdtCutFile2 = "";//"test2_gate_17N.root";
-TString ezCutFile   = "";//"ezCut.root";
-
-//TODO switches for histograms on/off
-//############################################ end of user setting
-
-ULong64_t NumEntries = 0;
-ULong64_t ProcessedEntries = 0;
-Float_t Frac = 0.1; ///Progress bar
-TStopwatch StpWatch;
-
-//======= Canvas
-TCanvas *cCanvas;
-TString canvasTitle;
-int lastRunID;
-bool contFlag;
-double runTime=0;
-
-//======= Recoil Cut
-TCutG* cutG; //!  //general temeprary pointer to cut
-
-TObjArray * cutList1;
-Bool_t isCutFileOpen1;
-int numCut1;
-
-TObjArray * cutList2;
-Bool_t isCutFileOpen2;
-int numCut2;
-
-//======= Other Cuts
-TCutG* EZCut;
-Bool_t isEZCutFileOpen;
-
-/******************************************************************
-*   variable and histogram naming rules                           *
-*   name are case sensitive, so as any C/C++ code                 *
-*                                                                 *
-*   ID is dettector ID                                            *
-*                                                                 *
-*   raw data from gen_tree are e, xf, xn, ring.                   *
-*   the x from raw data is x                                      *
-*                                                                 *
-*   xf + xn = xs, s for sum                                       *
-*                                                                 *
-*   calibrated data are  eCal, xfCal, xnCal, ringCal.             *
-*   the x from cal data is xCal                                   *
-*                                                                 *
-*   xfCal + xnCal = xsCal                                         *
-*                                                                 *
-*   since the z is always from xCal, so it calls z.               *
-*                                                                 *
-*   Excitation energy calls Ex                                    *
-*                                                                 *
-*                                                                 *
-*   TH2D is always using "V" to seperate 2 variables, like eVx    *
-*                                                                 *
-*  histogram with TCutG, add suffix "GC" for Graphical-Cut.       *
-*                                                                 *
-*******************************************************************/
-//======== raw data
-TH1F* he[NARRAY];
-TH1F* hring[NARRAY];
-TH1F* hxf[NARRAY];
-TH1F* hxn[NARRAY];
-
-TH2F* heVring[NARRAY];
-TH2F* hxfVxn[NARRAY];
-TH2F* heVxs[NARRAY];
-
-//TH1F* hMultiHit; //TODO
-
-TH2F* heVID;
-TH2F* heVIDG; //gated
-TH2F* hringVID;
-TH2F* hxfVID;
-TH2F* hxnVID;
-
-TH2F* heVx[NARRAY]; // e vs (xf-xn)/e
-TH2F* hringVx[NARRAY]; // ring vs (xf-xn)/e
-
-//====== cal data
-TH2F* heVxsCal[NARRAY]; // raw e vs xf
-
-TH2F* heCalVxCal[NARRAY]; // eCal vs xCal
-TH2F* heCalVxCalG[NARRAY]; // eCal vs xCal
-TH1F* heCal[NARRAY];
-TH2F* heCalID; // e vs detID
-TH2F* hxfCalVxnCal[NARRAY]; 
-
-TH2F* heCalVz;
-TH2F* heCalVzGC;
-TH2F* hecalVzRow[NROW];
-TH2F* hecalVzRowG[NROW];
-
-//====== Ex data
-TH1F* hEx;
-TH1F* hExi[NARRAY];
-TH2F* hExVxCal[NARRAY];
-TH1F* hExc[NARRAY/NROW];
-
-TH2F* hExThetaCM;
-
-TH1F* hExCut1;
-TH1F* hExCut2;
-
-//====== TAC
-TH1F* htac;   // by TAC
-TH1F* htac2;  // by timestamp
-TH2F* htacEx;
-TH2F* htac2Ex;
-
-TH1I* htacArray[NARRAY];
-
-TH2F* htacTdiff;
-TH2F* htacTdiffg;
-
-TH2F* htacRecoil[8];
-TH2F* htacRecoilsum[4];
-
-//======= APOLLO
-TH1F* hApollo[20];
-
-//======= Recoil
-TH2F* hrdtID;
-TH1F* hrdt[NRDT]; // single recoil
-TH1F* hrdtg[NRDT]; 
-
-TH2F* hrdt2D[4];
-TH2F* hrdt2Dsum[4];
-TH2F* hrdt2Dg[4];
-
-TH2F* hrdtMatrix; // coincident between rdt
-
-TH1F* hrdtRate1;
-TH1F* hrdtRate2;
-
-//======= Circular Recoil
-TH2F* hcrdtID;
-TH1F* hcrdt[16];
-TH2F* hcrdtPolar;
-
-//======= ELUM
-TH1F* helum[NELUM];
-TH2F* helumID;
-
-TH1F* helum4D; // elum rate for (d,d)
-TH1F* helum4C; // elum rate for (12C, 12C)
-
-TH1F* hBIC; // BIC, beam integrated current
-
-//======= EZero, or IonChamber when recoil also use
-TH1F* hic0; //ionChamber ch0
-TH1F* hic1;
-TH1F* hic2;
-
-TH2F* hic01; //ionChamber ch0-ch1
-TH2F* hic02;
-TH2F* hic12;
-
-//======= multi-Hit
-TH2I *hmult;
-TH1I *hmultEZ;
-TH2I *hArrayRDTMatrix;
-TH2I *hArrayRDTMatrixG;
-
-//======= ARRAY-RDT time diff
-TH1I *htdiff;
-TH1I *htdiffg;
-
-/***************************
- ***************************/
-//==== global variables
-Float_t x[NARRAY],z[NARRAY];
-Float_t xcal[NARRAY],xfcal[NARRAY],xncal[NARRAY],eCal[NARRAY];
-Int_t tacA[NARRAY];
-
-//==== correction parameters
-Float_t xnCorr[NARRAY];
-Float_t xfxneCorr[NARRAY][2];
-Float_t xScale[NARRAY];
-Float_t eCorr[NARRAY][2];
-Float_t rdtCorr[8][2];
-//==== parameters for Ex and thetaCM calcualtion
-
-double zRange[2] = {-1000, 0}; // zMin, zMax
-
-double Ex, thetaCM;
-double q, alpha, Et, betRel, gamm, G, massB, mass; //variables for Ex calculation
-bool isReaction;
-
-int padID = 0;
-
-TLatex text;
-
-#include "Monitors.h"
 void Monitors::Init(TTree *tree){
 
    // Set branch addresses and branch pointers
@@ -1637,9 +1409,9 @@ void Monitors::Terminate()
    /************************************/
    StpWatch.Start(kFALSE);
    
-   gROOT->ProcessLine(".L ../Armory/Monitors_Util.C");
+   // gROOT->ProcessLine(".L ../Armory/Monitors_Util.C");
    //gROOT->ProcessLine(Form("FindBesCanvasDivision(%d)", numDet));
-   printf("=============== loaded Monitors_Utils.C\n");
+   // printf("=============== loaded Monitors_Utils.C\n");
    gROOT->ProcessLine(".L ../Armory/AutoFit.C");
    printf("=============== loaded Armory/AutoFit.C\n");
    gROOT->ProcessLine(".L ../Armory/RDTCutCreator.C");
@@ -1650,7 +1422,7 @@ void Monitors::Terminate()
    // printf("=============== loaded Armory/readTrace.C\n");
    // gROOT->ProcessLine(".L ../Armory/readRawTrace.C");
    // printf("=============== loaded Armory/readRawTrace.C\n");
-   gROOT->ProcessLine("listDraws()");
+   // gROOT->ProcessLine("listDraws()");
    
    /************************* Save histograms to root file*/
    
@@ -1683,6 +1455,3 @@ void Monitors::Terminate()
 
 
 }
-
-
-#endif

@@ -7,14 +7,13 @@
 #ifndef Monitors_h
 #define Monitors_h
 
-#include "TROOT.h"
-#include "TChain.h"
-#include "TFile.h"
+class TChain;
+class TBranch;
+
 #include "TSelector.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "TStyle.h"
-#include "TCutG.h"
+#include "TTree.h"
 
 #include "GeneralSortMapping.h"
 #include "../Armory/AnalysisLibrary.h"
@@ -152,5 +151,7 @@ class Monitors : public TSelector {
 
         ClassDef(Monitors,0);
 };
+
+
 
 #endif
