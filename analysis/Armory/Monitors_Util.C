@@ -13,6 +13,7 @@
 
 #include "../working/GeneralSortMapping.h"
 #include "../working/Monitors.h"
+#include "../working/MonitorsGlobals.h"
 
 
 int canvasSize[2] = {2000, 1200};
@@ -58,7 +59,7 @@ void listDraws() {
     // printf("    readRawTrace() - read trace from runXXX.root \n");
     //  printf("         Check1D() - Count Integral within a range\n");
     printf("-----------------------------------------------------\n");
-    printf("   %s\n", canvasTitle.Data());
+    printf("   %s\n", monitorsglobals::canvasTitle.Data());
     printf("-----------------------------------------------------\n");
 }
 
@@ -75,7 +76,7 @@ void FindBesCanvasDivision(int nPad){
 
 int nCanvas=0;
 void newCanvas(int sizeX = 800, int sizeY = 600, int posX = 0, int posY = 0){
-    TString name; name.Form("cNewCanvas%d | %s", nCanvas, canvasTitle.Data());
+    TString name; name.Form("cNewCanvas%d | %s", nCanvas, monitorsglobals::canvasTitle.Data());
     TCanvas * cNewCanvas = new TCanvas(name, name, posX, posY, sizeX, sizeY);
     nCanvas++;
     cNewCanvas->cd();
@@ -87,116 +88,116 @@ void newCanvas(int sizeX = 800, int sizeY = 600, int posX = 0, int posY = 0){
 
 void rawID(){
     TCanvas * cRawID = (TCanvas *) gROOT->FindObjectAny("cRawID");
-    if( cRawID == NULL ) cRawID = new TCanvas("cRawID", Form("Raw e, Ring, xf, xn vs ID | %s", canvasTitle.Data()), canvasSize[0], canvasSize[1]);
+    if( cRawID == NULL ) cRawID = new TCanvas("cRawID", Form("Raw e, Ring, xf, xn vs ID | %s", monitorsglobals::canvasTitle.Data()), canvasSize[0], canvasSize[1]);
     cRawID->Clear();cRawID->Divide(2,2);
-    cRawID->cd(1);  cRawID->cd(1)->SetGrid(); heVID->Draw("colz");
-    cRawID->cd(2);  cRawID->cd(2)->SetGrid(); hringVID->Draw("colz");
-    cRawID->cd(3);  cRawID->cd(3)->SetGrid(); hxfVID->Draw("colz");
-    cRawID->cd(4);  cRawID->cd(4)->SetGrid(); hxnVID->Draw("colz");
+    cRawID->cd(1);  cRawID->cd(1)->SetGrid(); monitorsglobals::heVID->Draw("colz");
+    cRawID->cd(2);  cRawID->cd(2)->SetGrid(); monitorsglobals::hringVID->Draw("colz");
+    cRawID->cd(3);  cRawID->cd(3)->SetGrid(); monitorsglobals::hxfVID->Draw("colz");
+    cRawID->cd(4);  cRawID->cd(4)->SetGrid(); monitorsglobals::hxnVID->Draw("colz");
 }
 
 void rawe(Bool_t isLogy = false) {
     TCanvas *cRawE = (TCanvas *) gROOT->FindObjectAny("cRawE");
-    if( cRawE == NULL ) cRawE = new TCanvas("cRawE",Form("E raw | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cRawE == NULL ) cRawE = new TCanvas("cRawE",Form("E raw | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cRawE->Clear();cRawE->Divide(NCOL,NROW);
     for (Int_t i=0; i<NARRAY; i++) {
         cRawE->cd(i+1);
         cRawE->cd(i+1)->SetGrid();
         if( isLogy ) cRawE->cd(i+1)->SetLogy();
-        he[i]->Draw("");
+        monitorsglobals::he[i]->Draw("");
     }
 }
 
 void rawring(Bool_t isLogy = false) {
     TCanvas *cRawRing = (TCanvas *) gROOT->FindObjectAny("cRawRing");
-    if( cRawRing == NULL ) cRawRing = new TCanvas("cRawRing",Form("Ring raw | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cRawRing == NULL ) cRawRing = new TCanvas("cRawRing",Form("Ring raw | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cRawRing->Clear();cRawRing->Divide(NCOL,NROW);
     for (Int_t i=0; i<NARRAY; i++) {
         cRawRing->cd(i+1);
         cRawRing->cd(i+1)->SetGrid();
         if( isLogy ) cRawRing->cd(i+1)->SetLogy();
-        hring[i]->Draw("");
+        monitorsglobals::hring[i]->Draw("");
     }
 }
 
 void rawxf(Bool_t isLogy = false) {
     TCanvas *cRawXf = (TCanvas *) gROOT->FindObjectAny("cRawXf");
-    if( cRawXf == NULL ) cRawXf = new TCanvas("cRawXf",Form("Xf raw | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cRawXf == NULL ) cRawXf = new TCanvas("cRawXf",Form("Xf raw | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cRawXf->Clear();cRawXf->Divide(NCOL,NROW);
     for (Int_t i=0; i<NARRAY; i++) {
         cRawXf->cd(i+1);
         cRawXf->cd(i+1)->SetGrid();
         if( isLogy ) cRawXf->cd(i+1)->SetLogy();
-        hxf[i]->Draw("");
+        monitorsglobals::hxf[i]->Draw("");
     }
 }
 
 void rawxn(Bool_t isLogy = false) {
     TCanvas *cRawXn = (TCanvas *) gROOT->FindObjectAny("cRawXn");
-    if( cRawXn == NULL ) cRawXn = new TCanvas("cRawXn",Form("Xn raw | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cRawXn == NULL ) cRawXn = new TCanvas("cRawXn",Form("Xn raw | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cRawXn->Clear();cRawXn->Divide(NCOL,NROW);
     for (Int_t i=0; i<NARRAY; i++) {
         cRawXn->cd(i+1);
         cRawXn->cd(i+1)->SetGrid();
         if( isLogy ) cRawXn->cd(i+1)->SetLogy();
-        hxn[i]->Draw("");
+        monitorsglobals::hxn[i]->Draw("");
     }
 }
 
 void eVring(void) {
     TCanvas *cRawERing = (TCanvas *) gROOT->FindObjectAny("cRawERing");
-    if( cRawERing == NULL ) cRawERing = new TCanvas("cRawERing",Form("e vs. ring | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cRawERing == NULL ) cRawERing = new TCanvas("cRawERing",Form("e vs. ring | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cRawERing->Clear(); cRawERing->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
         cRawERing->cd(i+1);
         cRawERing->cd(i+1)->SetGrid();
-        heVring[i]->Draw("col");
+        monitorsglobals::heVring[i]->Draw("col");
     }
 }
 
 void xfVxn(void) {
     TCanvas *cxfxn = (TCanvas *) gROOT->FindObjectAny("cxfxn");
-    if( cxfxn == NULL ) cxfxn = new TCanvas("cxfxn",Form("XF vs. XN | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cxfxn == NULL ) cxfxn = new TCanvas("cxfxn",Form("XF vs. XN | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cxfxn->Clear(); cxfxn->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
         cxfxn->cd(i+1);
         cxfxn->cd(i+1)->SetGrid();
-        hxfVxn[i]->Draw("col");
+        monitorsglobals::hxfVxn[i]->Draw("col");
     }
 }
 
 void eVxs(void) {
     TCanvas *cxfxne = (TCanvas *) gROOT->FindObjectAny("cxfxne");
-    if( cxfxne == NULL ) cxfxne = new TCanvas("cxfxne",Form("E - XF+XN | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cxfxne == NULL ) cxfxne = new TCanvas("cxfxne",Form("E - XF+XN | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cxfxne->Clear(); cxfxne->Divide(NCOL,NROW);
     TLine line(0,0, 4000, 4000); line.SetLineColor(2);
     for (Int_t i=0;i<NARRAY;i++) {
         cxfxne->cd(i+1);
         cxfxne->cd(i+1)->SetGrid();
-        heVxs[i]->Draw("col");
+        monitorsglobals::heVxs[i]->Draw("col");
         line.Draw("same");
     }
 }
 
 void ecal(void) {
     TCanvas *cEC = (TCanvas *) gROOT->FindObjectAny("cEC");
-    if(cEC == NULL) cEC = new TCanvas("cEC",Form("E corrected | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(cEC == NULL) cEC = new TCanvas("cEC",Form("E corrected | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cEC->Clear();cEC->Divide(NCOL,NROW);
     for (Int_t i=0; i<NARRAY; i++) {
         cEC->cd(i+1);
         cEC->cd(i+1)->SetGrid();
-        heCal[i]->Draw("");
+        monitorsglobals::heCal[i]->Draw("");
     }
 
     TCanvas *cEC2 = (TCanvas *) gROOT->FindObjectAny("cEC2");
-    if(cEC2 == NULL) cEC2 = new TCanvas("cEC2",Form("E corrected | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(cEC2 == NULL) cEC2 = new TCanvas("cEC2",Form("E corrected | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cEC2->Clear();
-    heCalID->Draw("colz");
+    monitorsglobals::heCalID->Draw("colz");
 }
 
 void ecal2(void) {
     TCanvas *cECall = (TCanvas *) gROOT->FindObjectAny("cECall");
-    if(cECall == NULL) cECall = new TCanvas("cECall",Form("E corrected | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(cECall == NULL) cECall = new TCanvas("cECall",Form("E corrected | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
 
     int maxRC = TMath::Max(NROW, NCOL);
     cECall->Clear();cECall->Divide(maxRC,2);
@@ -204,10 +205,10 @@ void ecal2(void) {
     for(int i = 0; i < NCOL ; i++){
         cECall->cd(i+1);
         cECall->cd(i+1)->SetGrid();
-        heCal[i]->SetLineColor(1); heCal[i]->Draw("");
+        monitorsglobals::heCal[i]->SetLineColor(1); monitorsglobals::heCal[i]->Draw("");
         for(int j = 1 ; j < NROW; j++){
-            heCal[NCOL*j + i]->SetLineColor(j+1);
-            heCal[NCOL*j + i]->Draw("same");
+            monitorsglobals::heCal[NCOL*j + i]->SetLineColor(j+1);
+            monitorsglobals::heCal[NCOL*j + i]->Draw("same");
         }
     }
     //plot same side
@@ -215,10 +216,10 @@ void ecal2(void) {
     for (Int_t i = 0; i< NROW; i++) {
         cECall->cd(i+maxRC+1);
         cECall->cd(i+maxRC+1)->SetGrid();
-        heC2[NCOL*i] = (TH1F* )heCal[NCOL*i]->Clone();
+        heC2[NCOL*i] = (TH1F* )monitorsglobals::heCal[NCOL*i]->Clone();
         heC2[NCOL*i]->SetLineColor(1); heC2[NCOL*i]->Draw("");
         for( int j = 1; j < NCOL; j++){
-            heC2[NCOL*i+j] = (TH1F* )heCal[NCOL*i+j]->Clone();
+            heC2[NCOL*i+j] = (TH1F* )monitorsglobals::heCal[NCOL*i+j]->Clone();
             heC2[NCOL*i+j]->SetLineColor(j+1);
             heC2[NCOL*i+j]->Draw("same");
         }
@@ -228,109 +229,109 @@ void ecal2(void) {
 
 void xfCalVxnCal(void) {
     TCanvas *cxfxnC = (TCanvas *) gROOT->FindObjectAny("cxfxnC");
-    if(cxfxnC == NULL) cxfxnC = new TCanvas("cxfxnC",Form("XF vs XN corrected | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(cxfxnC == NULL) cxfxnC = new TCanvas("cxfxnC",Form("XF vs XN corrected | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cxfxnC->Clear(); cxfxnC->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
         cxfxnC->cd(i+1);
         cxfxnC->cd(i+1)->SetGrid();
-        hxfCalVxnCal[i]->Draw("col");
+        monitorsglobals::hxfCalVxnCal[i]->Draw("col");
     }
 }
 
 void eVxsCal(void) {
     TCanvas *cxfxneC = (TCanvas *) gROOT->FindObjectAny("cxfxneC");
-    if(cxfxneC == NULL)cxfxneC = new TCanvas("cxfxneC",Form("Raw E - Corrected XF+XN | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(cxfxneC == NULL)cxfxneC = new TCanvas("cxfxneC",Form("Raw E - Corrected XF+XN | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cxfxneC->Clear(); cxfxneC->Divide(NCOL,NROW);
     TLine line(0,0, 4000, 4000); line.SetLineColor(2);
     for (Int_t i=0;i<NARRAY;i++) {
         cxfxneC->cd(i+1);
         cxfxneC->cd(i+1)->SetGrid();
-        heVxsCal[i]->Draw("col");
+        monitorsglobals::heVxsCal[i]->Draw("col");
         line.Draw("same");
     }
 }
 
 void eVx(void) {
     TCanvas *ceVx = (TCanvas *) gROOT->FindObjectAny("ceVx");
-    if(ceVx == NULL) ceVx = new TCanvas("ceVx",Form("E vs. X = (xf-xn)/e | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(ceVx == NULL) ceVx = new TCanvas("ceVx",Form("E vs. X = (xf-xn)/e | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     ceVx->Clear(); ceVx->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
-        ceVx->cd(i+1); heVx[i]->Draw("col");
+        ceVx->cd(i+1); monitorsglobals::heVx[i]->Draw("col");
     }
 }
 
 void ringVx(void) {
     TCanvas *cringVx = (TCanvas *) gROOT->FindObjectAny("cringVx");
-    if(cringVx == NULL) cringVx = new TCanvas("cringVx",Form("ring vs X = (xf-xn)/e | %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if(cringVx == NULL) cringVx = new TCanvas("cringVx",Form("ring vs X = (xf-xn)/e | %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cringVx->Clear(); cringVx->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
-        cringVx->cd(i+1); hringVx[i]->Draw("col");
+        cringVx->cd(i+1); monitorsglobals::hringVx[i]->Draw("col");
     }
 }
 
 void eCalVxCal(void) {
     TCanvas *cecalVxcal = (TCanvas *) gROOT->FindObjectAny("cecalVxcal");
-    if( cecalVxcal == NULL ) cecalVxcal = new TCanvas("cecalVxcal",Form("ECALVXCAL | %s",canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cecalVxcal == NULL ) cecalVxcal = new TCanvas("cecalVxcal",Form("ECALVXCAL | %s",monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cecalVxcal->Clear(); cecalVxcal->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
         cecalVxcal->cd(i+1);
-        heCalVxCal[i]->SetMarkerStyle(7);
-        heCalVxCal[i]->Draw("");
+        monitorsglobals::heCalVxCal[i]->SetMarkerStyle(7);
+        monitorsglobals::heCalVxCal[i]->Draw("");
     }
 }
 
 void eCalVxCalG(void) {
     TCanvas *cecalVxcalG = (TCanvas *) gROOT->FindObjectAny("cecalVxcalG");
-    if( cecalVxcalG == NULL ) cecalVxcalG = new TCanvas("cecalVxcalG",Form("ECALVXCAL | %s",canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cecalVxcalG == NULL ) cecalVxcalG = new TCanvas("cecalVxcalG",Form("ECALVXCAL | %s",monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     cecalVxcalG->Clear(); cecalVxcalG->Divide(NCOL,NROW);
     for (Int_t i=0;i<NARRAY;i++) {
         cecalVxcalG->cd(i+1);
-        heCalVxCalG[i]->SetMarkerStyle(7);
-        heCalVxCalG[i]->Draw("");
+        monitorsglobals::heCalVxCalG[i]->SetMarkerStyle(7);
+        monitorsglobals::heCalVxCalG[i]->Draw("");
     }
 }
 
 void elum(void) {
     TCanvas *celum = (TCanvas *) gROOT->FindObjectAny("celum");
-    if( celum == NULL ) celum = new TCanvas("celum",Form("ELUM | %s", canvasTitle.Data()),1000,1000);
+    if( celum == NULL ) celum = new TCanvas("celum",Form("ELUM | %s", monitorsglobals::canvasTitle.Data()),1000,1000);
     celum->Clear();
     if( NELUM > 1) celum->Divide(4,4);
     for( int i = 0 ; i < NELUM ; i++){
         celum->cd(i+1);
         celum->cd(i+1)->SetLogy();
-        helum[i]->Draw("");
+        monitorsglobals::helum[i]->Draw("");
     }
 
     // TCanvas *celumID = (TCanvas *) gROOT->FindObjectAny("celumID");
-    // if( celumID == NULL ) celumID = new TCanvas("celumID",Form("ELUM-ID | %s", canvasTitle.Data()),1100, 0, 500,500);
+    // if( celumID == NULL ) celumID = new TCanvas("celumID",Form("ELUM-ID | %s", monitorsglobals::canvasTitle.Data()),1100, 0, 500,500);
     // celumID->Clear();
-    // helumID->Draw("colz");
+    // monitorsglobals::helumID->Draw("colz");
 
 }
 
 void apollo(void) {
     TCanvas *capollo = (TCanvas *) gROOT->FindObjectAny("capollo");
-    if( capollo == NULL ) capollo = new TCanvas("capollo",Form("APOLLO | %s", canvasTitle.Data()),1000,1000);
+    if( capollo == NULL ) capollo = new TCanvas("capollo",Form("APOLLO | %s", monitorsglobals::canvasTitle.Data()),1000,1000);
     capollo->Clear(); capollo->Divide(5,4);
     for( int i = 0 ; i < 20 ; i++){
         capollo->cd(i+1);
-        hApollo[i]->Draw("");
+        monitorsglobals::hApollo[i]->Draw("");
     }
 }
 
 
 void recoils(bool isLogz = false) {
     TCanvas *crdt = (TCanvas *) gROOT->FindObjectAny("crdt");
-    if( crdt == NULL ) crdt = new TCanvas("crdt",Form("raw RDT | %s", canvasTitle.Data()),1700, 0, 1000,1000);
+    if( crdt == NULL ) crdt = new TCanvas("crdt",Form("raw RDT | %s", monitorsglobals::canvasTitle.Data()),1700, 0, 1000,1000);
     crdt->Clear();crdt->Divide(2,2);
 
-    if( isLogz ) crdt->cd(1)->SetLogz(); crdt->cd(1); hrdt2D[0]->Draw("col box");
-    if( isLogz ) crdt->cd(2)->SetLogz(); crdt->cd(2); hrdt2D[1]->Draw("col box");
-    if( isLogz ) crdt->cd(3)->SetLogz(); crdt->cd(3); hrdt2D[3]->Draw("col box");
-    if( isLogz ) crdt->cd(4)->SetLogz(); crdt->cd(4); hrdt2D[2]->Draw("col box");
+    if( isLogz ) crdt->cd(1)->SetLogz(); crdt->cd(1); monitorsglobals::hrdt2D[0]->Draw("col box");
+    if( isLogz ) crdt->cd(2)->SetLogz(); crdt->cd(2); monitorsglobals::hrdt2D[1]->Draw("col box");
+    if( isLogz ) crdt->cd(3)->SetLogz(); crdt->cd(3); monitorsglobals::hrdt2D[3]->Draw("col box");
+    if( isLogz ) crdt->cd(4)->SetLogz(); crdt->cd(4); monitorsglobals::hrdt2D[2]->Draw("col box");
 
     // TCanvas *crdtg = (TCanvas *) gROOT->FindObjectAny("crdtg");
-    // if( crdtg == NULL ) crdtg = new TCanvas("crdtg",Form("raw RDT (time gated) | %s", canvasTitle.Data()),1700, 0, 1000,1000);
+    // if( crdtg == NULL ) crdtg = new TCanvas("crdtg",Form("raw RDT (time gated) | %s", monitorsglobals::canvasTitle.Data()),1700, 0, 1000,1000);
     // crdtg->Clear();crdtg->Divide(2,2);
 
     // if( isLogz ) crdtg->cd(1)->SetLogz(); crdtg->cd(1); hrdtg[0]->Draw("");
@@ -340,7 +341,7 @@ void recoils(bool isLogz = false) {
 
 
     //TCanvas *crdtSum = (TCanvas *) gROOT->FindObjectAny("crdtSum");
-    //if( crdtSum == NULL ) crdtSum = new TCanvas("crdtSum",Form("raw RDT dE-Esum | %s", canvasTitle.Data()),100, 0, 1000,1000);
+    //if( crdtSum == NULL ) crdtSum = new TCanvas("crdtSum",Form("raw RDT dE-Esum | %s", monitorsglobals::canvasTitle.Data()),100, 0, 1000,1000);
     //crdtSum->Clear();crdtSum->Divide(2,2);
     //
     //if( isLogz ) crdtSum->cd(1)->SetLogz(); crdtSum->cd(1); hrdt2Dsum[0]->Draw("col");
@@ -349,22 +350,22 @@ void recoils(bool isLogz = false) {
     //if( isLogz ) crdtSum->cd(4)->SetLogz(); crdtSum->cd(4); hrdt2Dsum[2]->Draw("col");
 
     TCanvas *crdtID = (TCanvas *) gROOT->FindObjectAny("crdtID");
-    if( crdtID == NULL ) crdtID = new TCanvas("crdtID",Form("raw RDT ID | %s", canvasTitle.Data()),0,0, 500, 500);
+    if( crdtID == NULL ) crdtID = new TCanvas("crdtID",Form("raw RDT ID | %s", monitorsglobals::canvasTitle.Data()),0,0, 500, 500);
     crdtID->Clear();
     if( isLogz ) crdtID->SetLogz();
-    hrdtID->Draw("colz");
+    monitorsglobals::hrdtID->Draw("colz");
 
     TCanvas *crdtS = (TCanvas *) gROOT->FindObjectAny("crdtS");
-    if( crdtS == NULL ) crdtS = new TCanvas("crdtS",Form("raw RDT | %s", canvasTitle.Data()),600, 0, 1000, 1000);
+    if( crdtS == NULL ) crdtS = new TCanvas("crdtS",Form("raw RDT | %s", monitorsglobals::canvasTitle.Data()),600, 0, 1000, 1000);
     crdtS->Clear(); crdtS->Divide(2,4);
     for( int i = 0; i < NRDT; i ++){
         crdtS->cd(i+1);
         if( isLogz ) crdtS->cd(i+1)->SetLogy();
-        hrdt[i]->Draw("");
+        monitorsglobals::hrdt[i]->Draw("");
     }
 
     //TCanvas *crdtTAC = (TCanvas *) gROOT->FindObjectAny("crdtTAC");
-    //if( crdtTAC == NULL ) crdtTAC = new TCanvas("crdtTAC",Form("raw RDTtac | %s", canvasTitle.Data()),0,0, 1600, 1600);
+    //if( crdtTAC == NULL ) crdtTAC = new TCanvas("crdtTAC",Form("raw RDTtac | %s", monitorsglobals::canvasTitle.Data()),0,0, 1600, 1600);
     //crdtTAC->Clear(); crdtTAC->Divide(2,4);
     //for( int i = 0; i < 8; i ++){
     //  crdtTAC->cd(i+1);
@@ -379,16 +380,16 @@ void recoils(bool isLogz = false) {
 
 void eCalVz(void) {
     TCanvas *cecalVz = (TCanvas *) gROOT->FindObjectAny("cecalVz");
-    if( cecalVz == NULL ) cecalVz = new TCanvas("cevalVz",Form("ECALVZ : %s", canvasTitle.Data()),1000,650);
+    if( cecalVz == NULL ) cecalVz = new TCanvas("cevalVz",Form("ECALVZ : %s", monitorsglobals::canvasTitle.Data()),1000,650);
     cecalVz->Clear(); cecalVz->Divide(2,1);
     gStyle->SetOptStat("neiou");
-    cecalVz->cd(1);heCalVz->Draw("col");
-    cecalVz->cd(2);heCalVzGC->Draw("col");
+    cecalVz->cd(1);monitorsglobals::heCalVz->Draw("col");
+    cecalVz->cd(2);monitorsglobals::heCalVzGC->Draw("col");
 }
 
 void eCalVzRow() {
     TCanvas *cecalVzRow = (TCanvas *)gROOT->FindObjectAny("cecalVzRow");
-    if( cecalVzRow == NULL ) cecalVzRow = new TCanvas("cevalVzRow",Form("eCal - Z : %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cecalVzRow == NULL ) cecalVzRow = new TCanvas("cevalVzRow",Form("eCal - Z : %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     FindBesCanvasDivision(NROW);
     cecalVzRow->Clear(); cecalVzRow->Divide(xD,yD);
     gStyle->SetOptStat("neiou");
@@ -396,14 +397,14 @@ void eCalVzRow() {
     for(int row = 0; row < NROW; row ++){
         cecalVzRow->cd(row+1);
         cecalVzRow->cd(row+1)->SetGrid();
-        hecalVzRow[row]->Draw("colz");
+        monitorsglobals::hecalVzRow[row]->Draw("colz");
     }
 
 }
 
 void eCalVzRowG() {
     TCanvas *cecalVzRowG = (TCanvas *)gROOT->FindObjectAny("cecalVzRowG");
-    if( cecalVzRowG == NULL ) cecalVzRowG = new TCanvas("cevalVzRowG",Form("eCal - Z : %s", canvasTitle.Data()),canvasSize[0], canvasSize[1]);
+    if( cecalVzRowG == NULL ) cecalVzRowG = new TCanvas("cevalVzRowG",Form("eCal - Z : %s", monitorsglobals::canvasTitle.Data()),canvasSize[0], canvasSize[1]);
     FindBesCanvasDivision(NROW);
     cecalVzRowG->Clear(); cecalVzRowG->Divide(xD,yD);
     gStyle->SetOptStat("neiou");
@@ -411,7 +412,7 @@ void eCalVzRowG() {
     for(int row = 0; row < NROW; row ++){
         cecalVzRowG->cd(row+1);
         cecalVzRowG->cd(row+1)->SetGrid();
-        hecalVzRowG[row]->Draw("colz");
+        monitorsglobals::hecalVzRowG[row]->Draw("colz");
     }
 
 }
@@ -419,28 +420,28 @@ void eCalVzRowG() {
 
 void excite(void) {
     TCanvas *cex = (TCanvas *) gROOT->FindObjectAny("cex");
-    if( cex == NULL ) cex = new TCanvas("cex",Form("EX : %s", canvasTitle.Data()), 1000,650);
+    if( cex == NULL ) cex = new TCanvas("cex",Form("EX : %s", monitorsglobals::canvasTitle.Data()), 1000,650);
     cex->Clear();
     gStyle->SetOptStat("neiou");
-    hEx->Draw("");
+    monitorsglobals::hEx->Draw("");
 
 
     TCanvas *cexI = (TCanvas *) gROOT->FindObjectAny("cexI");
-    if( cexI == NULL ) cexI = new TCanvas("cexI",Form("EX : %s", canvasTitle.Data()), 1600,1000);
+    if( cexI == NULL ) cexI = new TCanvas("cexI",Form("EX : %s", monitorsglobals::canvasTitle.Data()), 1600,1000);
     cexI->Clear();cexI->Divide(NCOL,NROW);
     gStyle->SetOptStat("neiou");
     for( int i = 0; i < NARRAY; i++){
         cexI->cd(i+1);
-        hExi[i]->Draw("");
+        monitorsglobals::hExi[i]->Draw("");
     }
 
     TCanvas *cexC = (TCanvas *) gROOT->FindObjectAny("cexC");
-    if( cexC == NULL ) cexC = new TCanvas("cexC",Form("EX : %s", canvasTitle.Data()), 1600,300);
+    if( cexC == NULL ) cexC = new TCanvas("cexC",Form("EX : %s", monitorsglobals::canvasTitle.Data()), 1600,300);
     cexC->Clear();cexC->Divide(NCOL,1);
     gStyle->SetOptStat("neiou");
     for( int i = 0; i < NCOL; i++){
         cexC->cd(i+1);
-        hExc[i]->Draw("");
+        monitorsglobals::hExc[i]->Draw("");
     }
 
 }
@@ -448,23 +449,23 @@ void excite(void) {
 
 void ExThetaCM(void) {
     TCanvas *cExThetaCM = (TCanvas *) gROOT->FindObjectAny("cExThetaCM");
-    if( cExThetaCM == NULL ) cExThetaCM = new TCanvas("cExThetaCM",Form("EX - ThetaCM | %s", canvasTitle.Data()),650,650);
+    if( cExThetaCM == NULL ) cExThetaCM = new TCanvas("cExThetaCM",Form("EX - ThetaCM | %s", monitorsglobals::canvasTitle.Data()),650,650);
     cExThetaCM->Clear();
     gStyle->SetOptStat("neiou");
-    hExThetaCM->Draw("colz");
+    monitorsglobals::hExThetaCM->Draw("colz");
 }
 
 void ExVxCal(TString drawOpt = "") {
     TCanvas *cExVxCal = (TCanvas *) gROOT->FindObjectAny("cExVxCal");
-    if( cExVxCal == NULL ) cExVxCal = new TCanvas("cExVxCal",Form("EX | %s", canvasTitle.Data()),1600,1000);
+    if( cExVxCal == NULL ) cExVxCal = new TCanvas("cExVxCal",Form("EX | %s", monitorsglobals::canvasTitle.Data()),1600,1000);
     cExVxCal->Clear();
     gStyle->SetOptStat("neiou");
 
     cExVxCal->Divide(NCOL,NROW);
     for( int i = 0; i < NARRAY; i++){
         cExVxCal->cd(i+1);
-        if( drawOpt == "" )hExVxCal[i]->SetMarkerStyle(7);
-        hExVxCal[i]->Draw(drawOpt);
+        if( drawOpt == "" )monitorsglobals::hExVxCal[i]->SetMarkerStyle(7);
+        monitorsglobals::hExVxCal[i]->Draw(drawOpt);
     }
 
 }
@@ -472,7 +473,7 @@ void ExVxCal(TString drawOpt = "") {
 
 //void eSVeRaw(void) {
 //  TCanvas *ceSVeRaw = (TCanvas *) gROOT->FindObjectAny("ceSVeRaw");
-//  if( ceSVeRaw == NULL ) ceSVeRaw = new TCanvas("ceSVeRaw",Form("e(Ex,z) vs eRaw | %s", canvasTitle.Data()),1000,650);
+//  if( ceSVeRaw == NULL ) ceSVeRaw = new TCanvas("ceSVeRaw",Form("e(Ex,z) vs eRaw | %s", monitorsglobals::canvasTitle.Data()),1000,650);
 //  ceSVeRaw->Clear();
 //  gStyle->SetOptStat("neiou");
 //  
@@ -487,11 +488,11 @@ void ExVxCal(TString drawOpt = "") {
 
 void tac(void) {
     TCanvas *ctac = (TCanvas *) gROOT->FindObjectAny("ctac");
-    if( ctac == NULL ) ctac = new TCanvas("ctac",Form("ARRAY-RDT | %s", canvasTitle.Data() ),1000,650);
+    if( ctac == NULL ) ctac = new TCanvas("ctac",Form("ARRAY-RDT | %s", monitorsglobals::canvasTitle.Data() ),1000,650);
     ctac->Clear();ctac->SetGrid(0);ctac->Divide(NCOL,NROW);
     gStyle->SetOptStat("neiou");
     for (Int_t i=0;i<NARRAY;i++) {
-        ctac->cd(i+1); htacArray[i]->Draw("");
+        ctac->cd(i+1); monitorsglobals::htacArray[i]->Draw("");
         //   cutG = (TCutG *)cutList->At(i);
         //   cutG->Draw("same");
     }
@@ -501,17 +502,17 @@ void tac(void) {
 void ic(){
 
     TCanvas *cic = (TCanvas *) gROOT->FindObjectAny("cic");
-    if( cic == NULL ) cic = new TCanvas("cic",Form("Ionization Chamber | %s", canvasTitle.Data() ),1200,800);
+    if( cic == NULL ) cic = new TCanvas("cic",Form("Ionization Chamber | %s", monitorsglobals::canvasTitle.Data() ),1200,800);
 
     cic->Clear(); cic->SetGrid(0); cic->Divide(3,2);
     gStyle->SetOptStat("neiou");
 
-    cic->cd(1); hic0->Draw();
-    cic->cd(2); hic1->Draw();
-    cic->cd(3); hic2->Draw();
-    cic->cd(4); hic01->Draw("colz");
-    cic->cd(5); hic02->Draw("colz");
-    cic->cd(6); hic12->Draw("colz");
+    cic->cd(1); monitorsglobals::hic0->Draw();
+    cic->cd(2); monitorsglobals::hic1->Draw();
+    cic->cd(3); monitorsglobals::hic2->Draw();
+    cic->cd(4); monitorsglobals::hic01->Draw("colz");
+    cic->cd(5); monitorsglobals::hic02->Draw("colz");
+    cic->cd(6); monitorsglobals::hic12->Draw("colz");
 
 }
 
