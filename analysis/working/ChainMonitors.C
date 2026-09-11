@@ -14,8 +14,8 @@ void ChainMonitors(int RUNNUM = -1, int RUNNUM2 = -1, bool saveCanvas = false, b
         // chain->Add("../root_data/trace_run00[23].root");
 
         // Medium target 114 - runs 9-13
-        chain->Add("../root_data/gen_run009.root");
-        // chain->Add("../root_data/gen_run01[0-3].root");
+        // chain->Add("../root_data/gen_run009.root");
+        chain->Add("../root_data/gen_run01[0-3].root");
 
         // Thin target 88 - runs 14-17, [fix DAQ], 20-23
         // chain->Add("../root_data/gen_run01[4-7].root");
