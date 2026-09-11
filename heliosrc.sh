@@ -51,22 +51,22 @@ unset HELIOSANA
 unset HELIOSSYS
 SOURCE="${0}"
 PCName=$(uname -n)
-if [[ $(uname -n) == "digios1" ]]; then
-  HELIOSSYS=~/digios
-else
-  if [[ $(pwd) == $HOME ]]; then
-    HELIOSSYS=$(dirname ${SOURCE})
+# if [[ $(uname -n) == "digios1" ]]; then
+#   HELIOSSYS=~/digios
+# else
+  # if [[ $(pwd) == $HOME ]]; then
+HELIOSSYS=$(dirname ${SOURCE})
 
-    if [[ ${HELIOSSYS} == *"$HOME"* ]]; then
-      dummpy=0 # WHY IS THIS NEEDED?
-    else
-      HELIOSSYS=${HOME}/$HELIOSSYS
-    fi
-
-  else
-    HELIOSSYS=$(pwd)
-  fi
-fi
+  #   if [[ ${HELIOSSYS} == *"$HOME"* ]]; then
+  #     dummpy=0 # WHY IS THIS NEEDED?
+  #   else
+  #     HELIOSSYS=${HOME}/$HELIOSSYS
+  #   fi
+  #
+  # else
+  #   HELIOSSYS=$(pwd)
+  # fi
+# fi
 
 #-------- optional
 set_GitPS1
