@@ -4,7 +4,7 @@
 1               //target_Z
 1               //recoil_light_A
 1               //recoil-light_Z
-7.5            //beam-energy_in_MeV/u
+7.2            //beam-energy_in_MeV/u
 0.000           //beam-energy_sigma_in_MeV/u
 0.000           //beam-angle_in_mrad
 0.000           //beam-emittance_in_mrad
@@ -14,9 +14,9 @@
 false           //isTargetScattering
 0.913           //target_density_in_g/cm3
 2.2e-4          //targetThickness_in_cm
-../SRIM/16N_in_CD2.txt   //stopping_power_for_beam
-../SRIM/p_in_CD2.txt     //stopping_power_for_light_recoil
-../SRIM/17N_in_CD2.txt   //stopping_power_for_heavy_recoil
+../SRIM/16N_CD2.txt   //stopping_power_for_beam
+../SRIM/1H_CD2.txt     //stopping_power_for_light_recoil
+../SRIM/17N_CD2.txt   //stopping_power_for_heavy_recoil
 false           //isDacay
 17               //decayNucleus_A
 7                //decayNucleus_Z
